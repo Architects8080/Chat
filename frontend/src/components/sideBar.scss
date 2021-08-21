@@ -1,0 +1,32 @@
+aside {
+	left: 0;
+	width: 200px;
+	height: auto;
+	border: 1px solid #000;
+	margin: 20px 20px;
+
+	.friendList {
+		ul {
+			height: 450px;
+		}
+		ul li:hover {
+			cursor: pointer;
+		}
+	}
+
+	.DM {
+		border: 1px solid #000;
+		height: auto;
+		ul {
+			height: 150px;
+			border: 1px solid #000;
+		}
+		ul span {
+			font-weight: 600;
+		}
+		input {
+			width: 130px;
+			margin: 0 5px;
+		}
+	}
+}
