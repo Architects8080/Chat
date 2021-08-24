@@ -28,5 +28,5 @@ export class DirectMessageInfo {
   friendID: User;
 
   @Column({ nullable: false })
-  is_sender: boolean;
+  isSender: boolean;
 }
