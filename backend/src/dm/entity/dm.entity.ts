@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import { User } from "../../user/entity/user.entity";
 
 @Entity('direct_message')
@@ -9,24 +9,33 @@ export class DirectMessage {
   @Column({ nullable: false, length: 255 })
   message: string;
 
-  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)"})
-  timestamp: Date;
+  @OneToMany(() => DirectMessageInfo, dmInfo => dmInfo.dm)
+  dmInfo: DirectMessageInfo[];
 }
 
 @Entity('direct_message_info')
 export class DirectMessageInfo {
-  @ManyToOne(() => DirectMessage, dmID => dmID.dmID, { nullable: false })
+  @ManyToOne(() => DirectMessage, dm => dm.dmInfo)
   @JoinColumn({ name: 'dmID' })
-  dmID: DirectMessage;
+  dm: DirectMessage;
+  @Column({ primary: true, })
+  dmID: number;
 
-  @ManyToOne(() => User, userID => userID.id, { primary: true, })
+  @ManyToOne(() => User, userID => userID.id)
   @JoinColumn({ name: 'userID' })
-  userID: User;
+  user: User;
+  @Column({ primary: true, })
+  userID: number;
 
-  @ManyToOne(() => User, friendID => friendID.id, { primary: true, })
+  @ManyToOne(() => User, friendID => friendID.id)
   @JoinColumn({ name: 'friendID' })
-  friendID: User;
+  friend: User;
+  @Column({ primary: true, })
+  friendID: number;
 
   @Column({ nullable: false })
   isSender: boolean;
+
+  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)"})
+  timestamp: Date;
 }
