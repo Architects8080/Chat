@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { JwtMiddleware } from './auth/middleware/jwt.middleware';
 import { UserModule } from './user/user.module';
+import { ChannelModule } from './channel/channel.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { UserModule } from './user/user.module';
       }),
     }),
     UserModule,
+    ChannelModule,
   ],
   controllers: [AppController],
   providers: [AppService],
