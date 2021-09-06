@@ -1,6 +1,6 @@
 import { JwtService } from '@nestjs/jwt';
-import { JwtStrategy } from 'src/auth/strategy/jwt.strategy';
-import { Logger } from '@nestjs/common';
+import { cookieExtractor, JwtStrategy } from 'src/auth/strategy/jwt.strategy';
+import { Logger, UseGuards } from '@nestjs/common';
 import {
   MessageBody,
   OnGatewayConnection,
@@ -10,11 +10,13 @@ import {
   WebSocketServer
 } from '@nestjs/websockets';
 import { Server} from 'socket.io';
+import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { DmService } from './dm.service';
 import { SendDMDto } from './dto/sendDM';
 import { SocketUser } from 'src/socket/socket-user';
 import { SocketUserService } from './socket-user.service';
 
+@UseGuards(JwtAuthGuard)
 @WebSocketGateway()
 export class DmGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
@@ -29,11 +31,13 @@ export class DmGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleConnection (client: SocketUser) {
     this.logger.log(`[connected] ${client.id}`);
     try {
-      const userPayload = this.jwtService.verify(`${client.handshake.query.token}`);
+      const token = cookieExtractor(client);
+      const userPayload = this.jwtService.verify(token);
       const user = await this.jwtStrategy.validate(userPayload);
       client.user = user;
       this.socketUserService.addSocket(client);
     } catch (error) {
+      console.log(error);
       client.disconnect(true);
     }
   }
@@ -41,7 +45,8 @@ export class DmGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleDisconnect (client: SocketUser) {
     this.logger.log(`[disconnected] ${client.id}`);
     try {
-      const userPayload = this.jwtService.verify(`${client.handshake.query.token}`);
+      const token = cookieExtractor(client);
+      const userPayload = this.jwtService.verify(token);
       const user = await this.jwtStrategy.validate(userPayload);
       client.user = user;
       this.socketUserService.removeSocket(client);
